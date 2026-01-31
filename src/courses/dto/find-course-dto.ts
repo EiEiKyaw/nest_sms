@@ -1,5 +1,13 @@
 import { CourseTimelineStatus, GeneralStatus } from '@prisma/client';
-import { IsOptional, IsString, IsBoolean, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsOptional,
+  IsString,
+  IsBoolean,
+  IsEnum,
+  isNumber,
+  IsNumber,
+} from 'class-validator';
 
 export class FindCoursesDto {
   @IsOptional()
@@ -23,4 +31,15 @@ export class FindCoursesDto {
   @IsOptional()
   @IsBoolean()
   is_publish?: boolean;
+
+  // Pagination
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  page?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  limit?: number;
 }

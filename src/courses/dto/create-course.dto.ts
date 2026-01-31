@@ -54,5 +54,5 @@ export class CreateCourseDto {
 
   @IsString()
   @IsOptional()
-  thumbImthumb_image_urlageUrl?: string;
+  thumb_image_url?: string;
 }
