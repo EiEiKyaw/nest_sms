@@ -1,8 +1,9 @@
 import {
-  CourseStatus,
+  GeneralStatus,
   CourseTimelineStatus,
   CurrencyType,
 } from '@prisma/client';
+import { Expose } from 'class-transformer';
 import {
   IsString,
   IsInt,
@@ -20,38 +21,38 @@ export class CreateCourseDto {
   code: string;
 
   @IsString()
-  shortDescription: string;
+  short_description: string;
 
   @IsString()
-  longDescription: string;
+  long_description: string;
 
   @IsInt()
-  batchNo: number;
+  batch_no: number;
 
   @IsInt()
-  durationMonths: number;
+  duration_months: number;
 
   @IsNumber()
   fees: number;
 
   @IsEnum(CurrencyType)
-  currency: CurrencyType;
+  currency_type: CurrencyType;
 
   @IsBoolean()
   @IsOptional()
-  isPublish?: boolean;
+  is_publish?: boolean;
 
   @IsEnum(CourseTimelineStatus)
-  status: CourseTimelineStatus;
+  course_status: CourseTimelineStatus;
 
-  @IsEnum(CourseStatus)
-  courseStatus: CourseStatus;
-
-  @IsString()
-  @IsOptional()
-  originalImageUrl?: string;
+  @IsEnum(GeneralStatus)
+  status: GeneralStatus;
 
   @IsString()
   @IsOptional()
-  thumbImageUrl?: string;
+  original_image_url?: string;
+
+  @IsString()
+  @IsOptional()
+  thumbImthumb_image_urlageUrl?: string;
 }

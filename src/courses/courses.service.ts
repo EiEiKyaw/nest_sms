@@ -3,8 +3,8 @@ import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GeneralSuccessResponseDto } from 'src/common/dto/general-success-response-dto';
-import { CreateFailException } from 'src/common/exception/create-fail-exception';
 import { GeneralFailResponseDto } from 'src/common/dto/general-fail-response-dto';
+import { Course } from './entities/course.entity';
 
 @Injectable()
 export class CoursesService {
@@ -32,12 +32,17 @@ export class CoursesService {
     return `This action returns all courses`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: number) {
+    return await this.checkValidCourse(id);
   }
 
   async update(id: number, updateCourseDto: UpdateCourseDto) {
     try {
+      const validation = await this.checkValidCourse(id);
+      if (validation instanceof GeneralFailResponseDto) {
+        return validation;
+      }
+
       const duplicateCheck = await this.checkDuplicateCourse(
         updateCourseDto,
         id,
@@ -59,13 +64,25 @@ export class CoursesService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  async remove(id: number) {
+    const validation = await this.checkValidCourse(id);
+
+    if (validation instanceof GeneralFailResponseDto) {
+      return validation;
+    }
+
+    await this.prisma.course.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return new GeneralSuccessResponseDto(`Course '${id}' deleted successfully`);
   }
 
   private async checkDuplicateCourse(
     data: CreateCourseDto | UpdateCourseDto,
-    excludeId?: number,
+    courseId?: number,
   ) {
     const conditions: any[] = [];
     if (data.name) conditions.push({ name: data.name });
@@ -76,16 +93,30 @@ export class CoursesService {
     const duplicate = await this.prisma.course.findFirst({
       where: {
         OR: conditions,
-        AND: excludeId ? { id: { not: excludeId } } : undefined,
+        AND: courseId ? { id: { not: courseId } } : undefined,
       },
     });
 
     if (duplicate) {
       return new GeneralFailResponseDto(
-        `Course with name "${data.name || duplicate.name}" or code "${data.code || duplicate.code}" already exists`,
+        `Course with name '${data.name || duplicate.name}' or code '${data.code || duplicate.code}' already exists`,
       );
     }
 
     return null;
+  }
+
+  private async checkValidCourse(
+    id: number,
+  ): Promise<Course | GeneralFailResponseDto> {
+    const course = await this.prisma.course.findUnique({
+      where: { id },
+    });
+
+    if (!course) {
+      return new GeneralFailResponseDto(`Course '${id}' not found`);
+    }
+
+    return course;
   }
 }

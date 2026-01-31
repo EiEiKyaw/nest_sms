@@ -8,23 +8,23 @@ datasource db {
 }
 
 model Course {
-  id               Int   @id @default(autoincrement())
-  name             String
-  code             String
-  shortDescription String
-  longDescription  String?
-  batchNo          Int
-  durationMonths   Int
-  fees             Decimal
-  currency         String
-  isPublish        Boolean  @default(false)
-  status           CourseTimelineStatus
-  courseStatus     CourseStatus
-  originalImageUrl String?
-  thumbImageUrl    String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  @@unique([code, batchNo])
+  id                  Int   @id @default(autoincrement())
+  name                String
+  code                String
+  short_description   String
+  long_description    String?
+  batch_no            Int
+  duration_months     Int
+  fees                Decimal
+  currency_type       CurrencyType
+  is_publish          Boolean  @default(false)
+  course_status       CourseTimelineStatus
+  status              GeneralStatus
+  original_image_url  String?
+  thumb_image_url     String?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  @@unique([code, batch_no])
 }
 
 enum CourseTimelineStatus {
@@ -32,7 +32,7 @@ enum CourseTimelineStatus {
   ONGOING
 }
 
-enum CourseStatus {
+enum GeneralStatus {
   ACTIVE
   INACTIVE
 }
